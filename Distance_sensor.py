@@ -1,7 +1,9 @@
 import RPi.GPIO as GPIO
 import time
+from firebase import firebase
+firebase = firebase.FirebaseApplication('https://iot-car-parking-system.firebaseio.com/') #this line is for the firebase connection
+import time
 GPIO.setwarnings(False)
-
 def ping():
 	"""Get reading from HC-SR04"""
 	GPIO.setmode(GPIO.BCM)
@@ -32,10 +34,12 @@ def ping():
 	distance = round(distance, 2)
 	 
 	print "Distance:",distance,"cm"
-	 
+	if(distance>10):
+                firebase.put('/user',{'Distance':'false'}) 		#uploading data on firebase
+        else:
+                firebase.put('/user',{'Distance':'true'}) 		#uploading data on firebase
+	time.sleep(1)
 	GPIO.cleanup()
-
 print "Reading Distance \n"
-
 while True:
 	ping()
